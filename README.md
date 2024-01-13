@@ -23,6 +23,11 @@ The project follows a clean architecture structure with the following directorie
 - **Tests:** Contains test files for the implemented functionalities.
 
 ## How to Run
+Clone the repository:
+
+    ```bash
+    git clone https://github.com/nagthanmay/Bank_Repo.git
+    ```
 
 1. create a conda environment with python=3.9
 
