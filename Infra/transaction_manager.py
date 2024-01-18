@@ -1,22 +1,5 @@
 import threading
 
-class AccountRepository:
-    accounts = {}
-
-    @staticmethod
-    def save_account(account):
-        AccountRepository.accounts[account.account_id] = account
-
-    @staticmethod
-    def find_account_by_id(account_id):
-        return AccountRepository.accounts.get(account_id)
-
-    @staticmethod
-    def find_accounts_by_customer_id(customer_id):
-        return [account for account in AccountRepository.accounts.values() if account.customer_id == customer_id]
-
-
-
 class TransactionManager:
     _local_data = threading.local()
 
@@ -46,3 +29,22 @@ class TransactionManager:
     def is_in_transaction(cls):
         return getattr(cls._local_data, 'transaction_depth', 0) > 0
 
+    @classmethod
+    def nested_transaction(cls):
+        return NestedTransactionManager()
+
+class NestedTransactionManager:
+    def __enter__(self):
+        TransactionManager._local_data.transaction_depth += 1
+        print("Nested transaction started.")
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        TransactionManager._local_data.transaction_depth -= 1
+
+        if TransactionManager._local_data.transaction_depth == 0:
+            if exc_type is None:
+                # Commit the transaction if no exception occurred
+                print("Nested transaction committed.")
+            else:
+                # Rollback the transaction if an exception occurred
+                print("Nested transaction rolled back.")
